@@ -13,19 +13,20 @@
     h1{margin:0;font-size:20px}
     p{margin:0;line-height:1.6}
     .lead{font-weight:600}
-    .cta{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap}
-    .btn{background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer}
+    .cta{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer;transition:all 0.3s}
+    .btn:hover{background:#d63d66;transform:translateY(-2px);box-shadow:0 4px 12px rgba(233,78,119,0.3)}
+    .btn:disabled{opacity:0.6;cursor:not-allowed}
     .ghost{background:transparent;border:1px solid #ddd;color:var(--text)}
+    .ghost:hover{background:#f5f5f5;border-color:#ccc}
     .price{font-size:20px;font-weight:700;color:#111}
 
-    /* carousel */
     .carousel-wrap{width:520px;max-width:48%;min-width:300px;background: #f5f5f5;border-radius:12px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
     .slides-container{width:100%;height:100%;overflow:hidden}
     .slides{display:flex;transition:transform .45s ease;will-change:transform;height:100%;direction:ltr}
     .slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center}
     .slide img{width:100%;height:100%;object-fit:cover;display:block}
 
-    /* controls */
     .control{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);cursor:pointer;border:0}
     .control.right{right:12px}
     .control.left{left:12px}
@@ -35,13 +36,20 @@
     .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.6);cursor:pointer}
     .dot.active{background:var(--accent)}
 
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center}
+    .modal.show{display:flex}
+    .modal-content{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+    .modal h2{margin:0 0 15px;color:var(--accent)}
+    .modal p{margin:10px 0;line-height:1.6}
+    .modal-buttons{display:flex;gap:10px;margin-top:20px;justify-content:center}
+    .close-modal{background:#ddd;color:#333}
+    .close-modal:hover{background:#ccc}
+
     @media (max-width:900px){
       .card{flex-direction:column-reverse}
       .carousel-wrap{width:100%;max-width:none;min-width:0;height:320px}
       .content{padding:18px}
     }
-
-    blockquote{margin:8px 0;padding:12px;border-radius:8px;background:#fff8f9;border-left:4px solid var(--accent)}
   </style>
 </head>
 <body>
@@ -70,7 +78,7 @@
 
         <div class="cta">
           <div class="price">₪89</div>
-          <button class="btn" id="payBtn">קנה עכשיו</button>
+          <button class="btn" id="payBtn">קנה עכשיו עם Bit</button>
           <button class="btn ghost" id="moreBtn">קרא עוד</button>
         </div>
       </div>
@@ -95,7 +103,32 @@
     </div>
   </div>
 
+  <!-- Modal for payment instructions -->
+  <div class="modal" id="paymentModal">
+    <div class="modal-content">
+      <h2>תשלום דרך Bit</h2>
+      <p><strong>סכום לתשלום: ₪89</strong></p>
+      <p>אנא בחר/י את אפשרות התשלום:</p>
+      <div class="modal-buttons">
+        <button class="btn" id="openBitApp">פתח את Bit</button>
+        <button class="btn close-modal" id="closeModal">ביטול</button>
+      </div>
+      <p style="font-size:14px;margin-top:15px;color:#666">
+        לאחר התשלום, אנא שמור/י את אישור העסקה ושלח/י אותו לכתובת המייל שלנו.
+      </p>
+    </div>
+  </div>
+
   <script>
+    // Configuration - REPLACE THESE WITH YOUR ACTUAL VALUES
+    const BIT_CONFIG = {
+      // Option 1: If you have a Bit payment link from your business account
+      paymentLink: 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D',
+      amount: 89,
+      description: 'משושה לא מרוצה - ספר ילדים'
+    };
+
+    // Carousel functionality
     (function(){
       const slidesEl = document.getElementById('slides');
       const slides = Array.from(slidesEl.children);
@@ -104,6 +137,10 @@
       const next = document.getElementById('next');
       const payBtn = document.getElementById('payBtn');
       const moreBtn = document.getElementById('moreBtn');
+      const modal = document.getElementById('paymentModal');
+      const closeModal = document.getElementById('closeModal');
+      const openBitApp = document.getElementById('openBitApp');
+      
       let index = 0;
       const intervalMs = 3000;
       let timer = null;
@@ -142,23 +179,43 @@
 
       document.addEventListener('keydown',(e)=>{ if(e.key==='ArrowLeft'){ nextSlide(); resetTimer(); } if(e.key==='ArrowRight'){ prevSlide(); resetTimer(); } });
 
+      // Payment functionality
       payBtn.addEventListener('click', ()=>{
-        // BitApp payment integration
-        const bitAppUrl = 'https://bit.ly/3YourBitAppLink'; // החלף בקישור שלך מ-BitApp
-        const amount = 89;
-        const description = 'משושה לא מרוצה - ספר ילדים';
+        modal.classList.add('show');
+      });
+
+      closeModal.addEventListener('click', ()=>{
+        modal.classList.remove('show');
+      });
+
+      modal.addEventListener('click', (e)=>{
+        if(e.target === modal){
+          modal.classList.remove('show');
+        }
+      });
+
+      openBitApp.addEventListener('click', ()=>{
+        // Try to open Bit app with deep link first
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
-        // Option 1: Direct BitApp link (recommended)
-        // You need to create this link in your BitApp business account
-        window.location.href = bitAppUrl;
+        if(isMobile){
+          // Try deep link for mobile
+          window.location.href = BIT_CONFIG.deepLink;
+          
+          // Fallback to payment link after short delay
+          setTimeout(()=>{
+            window.location.href = BIT_CONFIG.paymentLink;
+          }, 1500);
+        } else {
+          // For desktop, open payment link
+          window.open(BIT_CONFIG.paymentLink, '_blank');
+        }
         
-        // Option 2: BitApp mobile deep link (if you have the API)
-        // const bitDeepLink = `bit://pay?amount=${amount}&description=${encodeURIComponent(description)}`;
-        // window.location.href = bitDeepLink;
+        modal.classList.remove('show');
       });
 
       moreBtn.addEventListener('click', ()=>{
-        alert('למידע נוסף, ניתן ליצור קשר או להוסיף קישור לדף מידע מורחב.');
+        alert('למידע נוסף ולפרטי יצירת קשר:\n\nניתן לשלוח מייל או להתקשר למספר טלפון שיופיע כאן.\n\nהספר "משושה לא מרוצה" זמין למשלוח לכל הארץ.');
       });
 
       update();
@@ -166,4 +223,3 @@
   </script>
 </body>
 </html>
-
