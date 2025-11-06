@@ -22,7 +22,7 @@
     .price{font-size:20px;font-weight:700;color:#111}
 
     .carousel-wrap{width:520px;max-width:48%;min-width:300px;background: #f5f5f5;border-radius:12px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
-    .slides-container{width:100%;height:100%;overflow:hidden}
+    .slides-container{width:100%;height:70%;overflow:hidden}
     .slides{display:flex;transition:transform .45s ease;will-change:transform;height:100%;direction:ltr}
     .slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center}
     .slide img{width:100%;height:100%;object-fit:cover;display:block}
@@ -44,6 +44,9 @@
     .modal-buttons{display:flex;gap:10px;margin-top:20px;justify-content:center}
     .close-modal{background:#ddd;color:#333}
     .close-modal:hover{background:#ccc}
+
+    textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-family:inherit;font-size:14px;resize:none;box-sizing:border-box}
+    input[type="number"]{width:60px;padding:5px;border-radius:6px;border:1px solid #ccc;font-size:14px;text-align:center}
 
     @media (max-width:900px){
       .card{flex-direction:column-reverse}
@@ -76,8 +79,20 @@
         <p>מתאים כמתנה לילד, להורה, לצוות חינוכי, והכי חשוב לעצמך ❤️</p>
         <p>ספר שגם מצחיק, גם מרגש – וגם עושה סדר בגאומטריה של הלב.</p>
 
+        <!-- New Section for choosing copies and dedication -->
+        <p><strong>מה עכשיו?</strong><br>
+        בחרו את מספר העותקים, הוסיפו הקדשה (אם תרצו),<br>
+        ואנחנו נדאג שהוא יגיע ארוז באהבה – מוכן לרגש.</p>
+
+        <label for="copies">מספר עותקים:</label>
+        <input type="number" id="copies" min="1" max="20" value="1" step="1">
+
+        <p><strong>רוצים לצרף מילה אישית?</strong><br>
+        כתבו כאן הקדשה – ואנחנו נדפיס אותה ממש בתוך הספר 💌</p>
+        <textarea id="dedication" rows="3" placeholder="הקלידו כאן את ההקדשה שלכם..."></textarea>
+
         <div class="cta">
-          <div class="price">₪89</div>
+          <div class="price" id="totalPrice">₪64</div>
           <button class="btn" id="payBtn">קנה עכשיו עם Bit</button>
           <button class="btn ghost" id="moreBtn">קרא עוד</button>
         </div>
@@ -88,6 +103,7 @@
           <div class="slides" id="slides">
             <div class="slide"><img alt="תמונה 1" src="https://i.imgur.com/jjZr714.jpeg"/></div>
             <div class="slide"><img alt="תמונה 2" src="https://i.imgur.com/gZb3J4v.jpeg"/></div>
+            <div class="slide"><img alt="תמונה 3" src="https://i.imgur.com/Zq4aYCR.jpeg"/></div>
           </div>
         </div>
 
@@ -107,7 +123,7 @@
   <div class="modal" id="paymentModal">
     <div class="modal-content">
       <h2>תשלום דרך Bit</h2>
-      <p><strong>סכום לתשלום: ₪89</strong></p>
+      <p><strong>סכום לתשלום: ₪64</strong></p>
       <p>אנא בחר/י את אפשרות התשלום:</p>
       <div class="modal-buttons">
         <button class="btn" id="openBitApp">פתח את Bit</button>
@@ -120,20 +136,20 @@
   </div>
 
   <script>
-    // Configuration - REPLACE THESE WITH YOUR ACTUAL VALUES
-    const BIT_CONFIG = {
-      // Option 1: If you have a Bit payment link from your business account
-      paymentLink: 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D',
-      
-      // Option 2: If you have a phone number for Bit transfers
-      phoneNumber: '0546433969',
-      
-      // Option 3: Deep link for Bit app (if available)
-      deepLink: 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D',
-      
-      amount: 89,
-      description: 'משושה לא מרוצה - ספר ילדים'
-    };
+    const PRICE_PER_BOOK = 64;
+    
+    // Update total price dynamically
+    const copiesInput = document.getElementById('copies');
+    const totalPriceEl = document.getElementById('totalPrice');
+
+    function updateTotal() {
+      const quantity = parseInt(copiesInput.value) || 1;
+      totalPriceEl.textContent = `₪${PRICE_PER_BOOK * quantity}`;
+    }
+
+    copiesInput.addEventListener('input', updateTotal);
+
+    updateTotal(); // initialize
 
     // Carousel functionality
     (function(){
@@ -202,22 +218,16 @@
       });
 
       openBitApp.addEventListener('click', ()=>{
-        // Try to open Bit app with deep link first
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         
         if(isMobile){
-          // Try deep link for mobile
-          window.location.href = BIT_CONFIG.deepLink;
-          
-          // Fallback to payment link after short delay
+          window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
           setTimeout(()=>{
-            window.location.href = BIT_CONFIG.paymentLink;
+            window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
           }, 1500);
         } else {
-          // For desktop, open payment link
-          window.open(BIT_CONFIG.paymentLink, '_blank');
+          window.open('https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D', '_blank');
         }
-        
         modal.classList.remove('show');
       });
 
