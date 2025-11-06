@@ -12,7 +12,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
       background:var(--bg);
       color:var(--text);
-      overflow-x: hidden; /* prevent horizontal scroll */
+      overflow-x: hidden;
     }
     .app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
     .card{width:100%;max-width:1100px;background:linear-gradient(180deg,#fff,#fbfbfb);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;display:flex;gap:var(--gap);flex-direction:row-reverse}
@@ -32,7 +32,7 @@
     .slides-container{width:100%;height:100%;overflow:hidden}
     .slides{display:flex;transition:transform .45s ease;will-change:transform;height:100%;direction:ltr}
     .slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-    .slide img{width:100%;height:100%;object-fit:contain;display:block} /* show full image */
+    .slide img{width:100%;height:100%;object-fit:contain;display:block}
 
     .control{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);cursor:pointer;border:0}
     .control.right{right:12px}
@@ -43,19 +43,18 @@
     .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.6);cursor:pointer}
     .dot.active{background:var(--accent)}
 
-    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;overflow-y: auto;} /* Added overflow-y: auto for scrolling on small screens */
+    .modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;overflow-y: auto;}
     .modal.show{display:flex}
-    .modal-content{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:right;box-shadow:0 20px 60px rgba(0,0,0,0.3); margin: 50px 0;} /* Added margin for space */
+    .modal-content{background:#fff;padding:30px;border-radius:16px;max-width:400px;width:90%;text-align:right;box-shadow:0 20px 60px rgba(0,0,0,0.3); margin: 50px 0;}
     .modal h2{margin:0 0 15px;color:var(--accent); text-align: center;}
     .modal p{margin:10px 0;line-height:1.6}
     .modal-buttons{display:flex;gap:10px;margin-top:20px;justify-content:center; flex-wrap: wrap;}
     .close-modal{background:#ddd;color:#333}
     .close-modal:hover{background:#ccc}
 
-    textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-family:inherit;font-size:14px;resize:none;box-sizing:border-box; text-align: right;} /* RTL for textarea */
+    textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-family:inherit;font-size:14px;resize:none;box-sizing:border-box; text-align: right;}
     select{width:70px;padding:5px;border-radius:6px;border:1px solid #ccc;font-size:14px;text-align:center;cursor:pointer}
 
-    /* --- New Styles for Form Inputs --- */
     .form-group{margin-bottom: 15px; text-align: right;}
     .form-group label{display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px;}
     .form-group input{
@@ -65,10 +64,9 @@
       border: 1px solid #ccc;
       box-sizing: border-box;
       font-size: 16px;
-      direction: rtl; /* Ensure Hebrew input is correct */
+      direction: rtl;
       text-align: right;
     }
-    /* Specific LTR for fields that should be LTR (like email, phone) */
     .form-group input[type="email"], 
     .form-group input[type="tel"] {
       direction: ltr; 
@@ -191,171 +189,193 @@
     <div class="modal-content">
       <h2 id="paymentModalTitle">תשלום דרך Bit</h2>
       <p><strong>סכום לתשלום: <span id="paymentTotalAmount">₪64</span></strong></p>
-      <p>אנא בחר/י את אפשרות התשלום:</p>
+      <p>אנא לחצו על "פתח את Bit" כדי לעבור לאפליקציה, ואז בצעו את התשלום. **פרטי ההזמנה יישלחו אוטומטית למייל**.</p>
       <div class="modal-buttons">
         <button class="btn" id="openBitApp">פתח את Bit</button>
         <button class="btn close-modal" data-modal="paymentModal">ביטול</button>
       </div>
       <p style="font-size:14px;margin-top:15px;color:#666">
-        לאחר התשלום, אנא שמור/י את אישור העסקה ושלח/י אותו לכתובת המייל שלנו.
+        מומלץ לשמור את אישור העסקה.
       </p>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  
   <script>
+    // 🛑 STEP 1: Replace 'YOUR_USER_ID' with your actual EmailJS User ID
+    emailjs.init('z-eaCzzxfo-aNi7OX'); 
+
     const PRICE_PER_BOOK = 64;
     const copiesInput = document.getElementById('copies');
     const totalPriceEl = document.getElementById('totalPrice');
     
-    // Updated Elements
+    // Elements
     const payBtn = document.getElementById('payBtn');
     const shippingModal = document.getElementById('shippingModal');
     const continueToPaymentBtn = document.getElementById('continueToPaymentBtn');
     const paymentModal = document.getElementById('paymentModal');
     const paymentTotalAmount = document.getElementById('paymentTotalAmount');
+    const moreBtn = document.getElementById('moreBtn');
+    const openBitApp = document.getElementById('openBitApp'); // The button that triggers the email send and the payment link
+
+    // Global variable to store order details for EmailJS
+    let currentOrderData = {};
 
     function updateTotal() {
       const quantity = parseInt(copiesInput.value) || 1;
       const total = PRICE_PER_BOOK * quantity;
       totalPriceEl.textContent = `₪${total}`;
-      paymentTotalAmount.textContent = `₪${total}`; // Update payment modal price
+      paymentTotalAmount.textContent = `₪${total}`; 
     }
 
-    copiesInput.addEventListener('change', updateTotal);
-    updateTotal(); // initialize
+    function closeModal(modalElement) {
+      modalElement.classList.remove('show');
+    }
 
-    // --- Carousel Logic (Kept as is for functionality) ---
-    (function(){
-      const slidesEl = document.getElementById('slides');
-      const slides = Array.from(slidesEl.children);
-      const dotsEl = document.getElementById('dots');
-      const prev = document.getElementById('prev');
-      const next = document.getElementById('next');
-      const moreBtn = document.getElementById('moreBtn');
-      
-      let index = 0;
-      const intervalMs = 3000;
-      let timer = null;
-
-      slides.forEach((s,i)=>{
-        const d = document.createElement('div'); 
-        d.className='dot'; 
-        d.dataset.i=i; 
-        d.addEventListener('click',()=>goTo(i)); 
-        dotsEl.appendChild(d);
-      });
-
-      function update(){
-        slidesEl.style.transform = `translateX(${-index*100}%)`;
-        Array.from(dotsEl.children).forEach((d,i)=> d.classList.toggle('active', i===index));
-      }
-
-      function nextSlide(){ index = (index+1) % slides.length; update(); }
-      function prevSlide(){ index = (index-1 + slides.length) % slides.length; update(); }
-      function goTo(i){ index = ((i%slides.length)+slides.length)%slides.length; update(); resetTimer(); }
-
-      prev.addEventListener('click', ()=>{ prevSlide(); resetTimer(); });
-      next.addEventListener('click', ()=>{ nextSlide(); resetTimer(); });
-
-      function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(nextSlide, intervalMs); }
-      function resetTimer(){ startTimer(); }
-      startTimer();
-
-      const carouselWrap = document.querySelector('.carousel-wrap');
-      carouselWrap.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
-      carouselWrap.addEventListener('mouseleave', ()=>{ startTimer(); });
-
-      let touchStartX = 0; let touchEndX = 0;
-      carouselWrap.addEventListener('touchstart', (e)=>{ touchStartX = e.changedTouches[0].clientX; if(timer) clearInterval(timer); });
-      carouselWrap.addEventListener('touchend', (e)=>{ touchEndX = e.changedTouches[0].clientX; const dx = touchEndX - touchStartX; if(Math.abs(dx) > 30){ if(dx>0) prevSlide(); else nextSlide(); } startTimer(); });
-
-      document.addEventListener('keydown',(e)=>{ if(e.key==='ArrowLeft'){ nextSlide(); resetTimer(); } if(e.key==='ArrowRight'){ prevSlide(); resetTimer(); } });
-
-      // --- NEW/UPDATED Modal and Payment Logic ---
-      
-      // Function to close a modal
-      function closeModal(modalElement) {
-        modalElement.classList.remove('show');
-      }
-
-      // Open Shipping Modal
-      payBtn.addEventListener('click', ()=>{ 
-        updateTotal(); // Make sure price is up-to-date
-        shippingModal.classList.add('show'); 
-      });
-
-      // Handle 'Continue to Payment' button
-      continueToPaymentBtn.addEventListener('click', (e)=>{
-        // Basic Form Validation (check if required fields are filled)
-        const name = document.getElementById('shippingName').value.trim();
-        const phone = document.getElementById('shippingPhone').value.trim();
-        const email = document.getElementById('shippingEmail').value.trim();
-        const city = document.getElementById('shippingCity').value.trim();
-        const address = document.getElementById('shippingAddress').value.trim();
-        
-        if (!name || !phone || !email || !city || !address) {
-            alert('אנא מלאו את כל פרטי המשלוח הנדרשים.');
+    // --- Email Sending Function ---
+    function sendOrderEmail() {
+        if (Object.keys(currentOrderData).length === 0) {
+            console.error('Error: No order data available for email sending.');
             return;
         }
 
-        // 1. Hide Shipping Modal
-        closeModal(shippingModal);
-        
-        // 2. Log Data (For actual use, you'd send this to your server/CRM)
-        console.log('--- Shipping Details ---');
-        console.log('Name:', name);
-        console.log('Phone:', phone);
-        console.log('Email:', email);
-        console.log('City:', city);
-        console.log('Address:', address);
-        console.log('Copies:', copiesInput.value);
-        console.log('Dedication:', document.getElementById('dedication').value);
-        console.log('Total Price:', totalPriceEl.textContent);
-        console.log('------------------------');
+        // 🛑 STEP 2: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual IDs
+        emailjs.send('service_cprtcca', 'template_50ax085', {
+            to_email: 'ranktk@gmail.com',
+            name: currentOrderData.name,
+            phone: currentOrderData.phone,
+            email: currentOrderData.email,
+            city: currentOrderData.city,
+            address: currentOrderData.address,
+            dedication: currentOrderData.dedication,
+            copies: currentOrderData.copies,
+            total: currentOrderData.totalPrice 
+        }).then(() => {
+            console.log('SUCCESS! Email sent to ranktk@gmail.com');
+            alert('✅ פרטי ההזמנה נשלחו בהצלחה! כעת עוברים ל-Bit.');
+        }).catch(err => {
+            console.error('EmailJS Error - Could not send email:', err);
+            alert('❌ שגיאה בשליחת המייל עם פרטי ההזמנה. אנא שלח/י את הפרטים ידנית.');
+        });
+    }
 
+    // --- Event Listeners and Logic ---
+    copiesInput.addEventListener('change', updateTotal);
+    updateTotal(); 
 
-        // 3. Show Payment Modal
-        paymentModal.classList.add('show');
-      });
+    // Carousel Logic (kept for completeness)
+    (function(){
+        const slidesEl = document.getElementById('slides');
+        const slides = Array.from(slidesEl.children);
+        const dotsEl = document.getElementById('dots');
+        const prev = document.getElementById('prev');
+        const next = document.getElementById('next');
+        let index = 0;
+        const intervalMs = 3000;
+        let timer = null;
 
+        slides.forEach((s,i)=>{
+            const d = document.createElement('div'); 
+            d.className='dot'; 
+            d.dataset.i=i; 
+            d.addEventListener('click',()=>goTo(i)); 
+            dotsEl.appendChild(d);
+        });
 
-      // Close Modals using the 'ביטול' buttons or outside click
-      document.querySelectorAll('.close-modal').forEach(button => {
-          button.addEventListener('click', () => {
-              const modalId = button.dataset.modal || (button.closest('.modal') ? button.closest('.modal').id : null);
-              if (modalId) {
-                  closeModal(document.getElementById(modalId));
-              }
-          });
-      });
+        function update(){
+            slidesEl.style.transform = `translateX(${-index*100}%)`;
+            Array.from(dotsEl.children).forEach((d,i)=> d.classList.toggle('active', i===index));
+        }
 
-      document.querySelectorAll('.modal').forEach(modal => {
-          modal.addEventListener('click', (e) => { 
-              if(e.target === modal){ 
-                  closeModal(modal);
-              } 
-          });
-      });
+        function nextSlide(){ index = (index+1) % slides.length; update(); }
+        function prevSlide(){ index = (index-1 + slides.length) % slides.length; update(); }
+        function goTo(i){ index = ((i%slides.length)+slides.length)%slides.length; update(); resetTimer(); }
+
+        prev.addEventListener('click', ()=>{ prevSlide(); resetTimer(); });
+        next.addEventListener('click', ()=>{ nextSlide(); resetTimer(); });
+
+        function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(nextSlide, intervalMs); }
+        function resetTimer(){ startTimer(); }
+        startTimer();
+
+        const carouselWrap = document.querySelector('.carousel-wrap');
+        carouselWrap.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
+        carouselWrap.addEventListener('mouseleave', ()=>{ startTimer(); });
+
+        update();
+    })();
+
+    // Open Shipping Modal
+    payBtn.addEventListener('click', ()=>{ 
+      updateTotal();
+      shippingModal.classList.add('show'); 
+    });
+
+    // Handle 'Continue to Payment' button (Validation & Data Storage)
+    continueToPaymentBtn.addEventListener('click', (e)=>{
+      const name = document.getElementById('shippingName').value.trim();
+      const phone = document.getElementById('shippingPhone').value.trim();
+      const email = document.getElementById('shippingEmail').value.trim();
+      const city = document.getElementById('shippingCity').value.trim();
+      const address = document.getElementById('shippingAddress').value.trim();
+      const dedication = document.getElementById('dedication').value;
+      const copies = copiesInput.value;
+      const totalPrice = paymentTotalAmount.textContent;
       
+      if (!name || !phone || !email || !city || !address) {
+          alert('אנא מלאו את כל פרטי המשלוח הנדרשים.');
+          return;
+      }
+      
+      // Store validated data
+      currentOrderData = { name, phone, email, city, address, dedication, copies, totalPrice };
 
-      // Payment logic (kept as is)
-      const openBitApp = document.getElementById('openBitApp');
-      openBitApp.addEventListener('click', ()=>{
+      // Hide Shipping Modal and Show Payment Modal
+      closeModal(shippingModal);
+      paymentModal.classList.add('show');
+    });
+
+    // Handle 'Open Bit' button (Trigger Email Send AND Payment Link)
+    openBitApp.addEventListener('click', ()=>{
+        // 1. Trigger the Email Send (using the data saved in currentOrderData)
+        sendOrderEmail(); 
+        
+        // 2. Open Bit App/Link
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const bitUrl = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
         if(isMobile){
+          // Try to open the app directly
           window.location.href = bitUrl;
+          // As a fallback, try again after a short delay
           setTimeout(()=>{ window.location.href = bitUrl; }, 1500);
         } else {
           window.open(bitUrl, '_blank');
         }
+        
+        // 3. Close the modal after action
         closeModal(paymentModal);
-      });
+    });
 
-      moreBtn.addEventListener('click', ()=>{ alert('למידע נוסף ולפרטי יצירת קשר:\n\nניתן לשלוח מייל או להתקשר למספר טלפון שיופיע כאן.\n\nהספר "משושה לא מרוצה" זמין למשלוח לכל הארץ.'); });
+    // Close Modals using the 'ביטול' buttons or outside click
+    document.querySelectorAll('.close-modal').forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.dataset.modal || (button.closest('.modal') ? button.closest('.modal').id : null);
+            if (modalId) {
+                closeModal(document.getElementById(modalId));
+            }
+        });
+    });
 
-      update();
-    })();
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => { 
+            if(e.target === modal){ 
+                closeModal(modal);
+            } 
+        });
+    });
+    
+    moreBtn.addEventListener('click', ()=>{ alert('למידע נוסף ולפרטי יצירת קשר:\n\nניתן לשלוח מייל או להתקשר למספר טלפון שיופיע כאן.\n\nהספר "משושה לא מרוצה" זמין למשלוח לכל הארץ.'); });
   </script>
 </body>
 </html>
