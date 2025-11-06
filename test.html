@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ספר — מצגת תמונות + כפתור קנייה</title>
+  <style>
+    :root{--gap:18px;--accent:#e94e77;--bg:#fff;--text:#222}
+    html,body{height:100%;margin:0;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg);color:var(--text)}
+    .app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+    .card{width:100%;max-width:1100px;background:linear-gradient(180deg,#fff,#fbfbfb);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;display:flex;gap:var(--gap);flex-direction:row-reverse}
+    .content{flex:1;min-width:260px;padding:28px;display:flex;flex-direction:column;gap:14px}
+    h1{margin:0;font-size:20px}
+    p{margin:0;line-height:1.6}
+    .lead{font-weight:600}
+    .cta{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap}
+    .btn{background:var(--accent);color:#fff;border:none;padding:12px 18px;border-radius:10px;font-weight:600;cursor:pointer}
+    .ghost{background:transparent;border:1px solid #ddd;color:var(--text)}
+    .price{font-size:20px;font-weight:700;color:#111}
+
+    /* carousel */
+    .carousel-wrap{width:520px;max-width:48%;min-width:300px;background: #f5f5f5;border-radius:12px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+    .slides-container{width:100%;height:100%;overflow:hidden}
+    .slides{display:flex;transition:transform .45s ease;will-change:transform;height:100%;direction:ltr}
+    .slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* controls */
+    .control{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);cursor:pointer;border:0}
+    .control.right{right:12px}
+    .control.left{left:12px}
+    .control svg{width:20px;height:20px}
+
+    .indicators{position:absolute;left:0;right:0;bottom:10px;margin:auto;display:flex;gap:8px;justify-content:center;z-index:5}
+    .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,0.6);cursor:pointer}
+    .dot.active{background:var(--accent)}
+
+    @media (max-width:900px){
+      .card{flex-direction:column-reverse}
+      .carousel-wrap{width:100%;max-width:none;min-width:0;height:320px}
+      .content{padding:18px}
+    }
+
+    blockquote{margin:8px 0;padding:12px;border-radius:8px;background:#fff8f9;border-left:4px solid var(--accent)}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card" role="application">
+      <div class="content">
+        <h1>מחפש/ת מתנה שתרגש?</h1>
+        <p class="lead">מחפשים מתנה שתדבר ללב, תצחיק את הנשמה – ותתאים מגיל 0 ועד 120?</p>
+
+        <p>
+          אם יש בחיים שלכם מישהו שתרצו להודות לו –
+          מחנכ/ת, גננ/ת, או כל דמות שהאמינה, חיזקה ועודדה –
+          הספר הזה הוא הדרך הכי מרגשת להגיד תודה.
+        </p>
+
+        <p>
+          "משושה לא מרוצה" הוא ספר ילדים ששם במרכזו את הקשר בין מבוגר משמעותי לדימוי העצמי של הילד,
+          ויוצר פתח לשיח רגשי. הוא גם כלי דידקטי ללימוד צורות –
+          ולהבנה שכל צורה בטבע יש לה מקום, תפקיד וחשיבות.
+        </p>
+
+        <p>כי הטבע מלמד אותנו – הצורה שלך זה בול!</p>
+
+        <p>מתאים כמתנה לילד, להורה, לצוות חינוכי, והכי חשוב לעצמך ❤️</p>
+        <p>ספר שגם מצחיק, גם מרגש – וגם עושה סדר בגאומטריה של הלב.</p>
+
+        <div class="cta">
+          <div class="price">₪89</div>
+          <button class="btn" id="payBtn">קנה עכשיו</button>
+          <button class="btn ghost" id="moreBtn">קרא עוד</button>
+        </div>
+      </div>
+
+      <div class="carousel-wrap" aria-roledescription="carousel">
+        <div class="slides-container">
+          <div class="slides" id="slides">
+            <div class="slide"><img alt="תמונה 1" src="https://i.imgur.com/jjZr714.jpeg"/></div>
+            <div class="slide"><img alt="תמונה 2" src="https://i.imgur.com/gZb3J4v.jpeg"/></div>
+            <div class="slide"><img alt="תמונה 3" src="https://i.imgur.com/L9vQG8m.jpeg"/></div>
+          </div>
+        </div>
+
+        <button class="control left" id="prev" aria-label="תמונה קודמת">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="control right" id="next" aria-label="תמונה הבאה">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <div class="indicators" id="dots"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const slidesEl = document.getElementById('slides');
+      const slides = Array.from(slidesEl.children);
+      const dotsEl = document.getElementById('dots');
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const payBtn = document.getElementById('payBtn');
+      const moreBtn = document.getElementById('moreBtn');
+      let index = 0;
+      const intervalMs = 3000;
+      let timer = null;
+
+      slides.forEach((s,i)=>{
+        const d = document.createElement('div'); 
+        d.className='dot'; 
+        d.dataset.i=i; 
+        d.addEventListener('click',()=>goTo(i)); 
+        dotsEl.appendChild(d);
+      });
+
+      function update(){
+        slidesEl.style.transform = `translateX(${-index*100}%)`;
+        Array.from(dotsEl.children).forEach((d,i)=> d.classList.toggle('active', i===index));
+      }
+
+      function nextSlide(){ index = (index+1) % slides.length; update(); }
+      function prevSlide(){ index = (index-1 + slides.length) % slides.length; update(); }
+      function goTo(i){ index = ((i%slides.length)+slides.length)%slides.length; update(); resetTimer(); }
+
+      prev.addEventListener('click', ()=>{ prevSlide(); resetTimer(); });
+      next.addEventListener('click', ()=>{ nextSlide(); resetTimer(); });
+
+      function startTimer(){ if(timer) clearInterval(timer); timer = setInterval(nextSlide, intervalMs); }
+      function resetTimer(){ startTimer(); }
+      startTimer();
+
+      const carouselWrap = document.querySelector('.carousel-wrap');
+      carouselWrap.addEventListener('mouseenter', ()=>{ if(timer) clearInterval(timer); });
+      carouselWrap.addEventListener('mouseleave', ()=>{ startTimer(); });
+
+      let touchStartX = 0; let touchEndX = 0;
+      carouselWrap.addEventListener('touchstart', (e)=>{ touchStartX = e.changedTouches[0].clientX; if(timer) clearInterval(timer); });
+      carouselWrap.addEventListener('touchend', (e)=>{ touchEndX = e.changedTouches[0].clientX; const dx = touchEndX - touchStartX; if(Math.abs(dx) > 30){ if(dx>0) prevSlide(); else nextSlide(); } startTimer(); });
+
+      document.addEventListener('keydown',(e)=>{ if(e.key==='ArrowLeft'){ nextSlide(); resetTimer(); } if(e.key==='ArrowRight'){ prevSlide(); resetTimer(); } });
+
+      payBtn.addEventListener('click', ()=>{
+        // BitApp payment integration
+        const bitAppUrl = 'https://bit.ly/3YourBitAppLink'; // החלף בקישור שלך מ-BitApp
+        const amount = 89;
+        const description = 'משושה לא מרוצה - ספר ילדים';
+        
+        // Option 1: Direct BitApp link (recommended)
+        // You need to create this link in your BitApp business account
+        window.location.href = bitAppUrl;
+        
+        // Option 2: BitApp mobile deep link (if you have the API)
+        // const bitDeepLink = `bit://pay?amount=${amount}&description=${encodeURIComponent(description)}`;
+        // window.location.href = bitDeepLink;
+      });
+
+      moreBtn.addEventListener('click', ()=>{
+        alert('למידע נוסף, ניתן ליצור קשר או להוסיף קישור לדף מידע מורחב.');
+      });
+
+      update();
+    })();
+  </script>
+</body>
+</html>
