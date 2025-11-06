@@ -6,7 +6,14 @@
   <title>ספר — מצגת תמונות + כפתור קנייה</title>
   <style>
     :root{--gap:18px;--accent:#e94e77;--bg:#fff;--text:#222}
-    html,body{height:100%;margin:0;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg);color:var(--text)}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x: hidden; /* prevent horizontal scroll */
+    }
     .app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
     .card{width:100%;max-width:1100px;background:linear-gradient(180deg,#fff,#fbfbfb);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;display:flex;gap:var(--gap);flex-direction:row-reverse}
     .content{flex:1;min-width:260px;padding:28px;display:flex;flex-direction:column;gap:14px}
@@ -22,10 +29,10 @@
     .price{font-size:20px;font-weight:700;color:#111}
 
     .carousel-wrap{width:520px;max-width:48%;min-width:300px;background: #f5f5f5;border-radius:12px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
-    .slides-container{width:100%;height:70%;overflow:hidden}
+    .slides-container{width:100%;height:100%;overflow:hidden}
     .slides{display:flex;transition:transform .45s ease;will-change:transform;height:100%;direction:ltr}
     .slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-    .slide img{width:100%;height:100%;object-fit:cover;display:block}
+    .slide img{width:100%;height:100%;object-fit:contain;display:block} /* show full image */
 
     .control{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);cursor:pointer;border:0}
     .control.right{right:12px}
@@ -46,7 +53,7 @@
     .close-modal:hover{background:#ccc}
 
     textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;font-family:inherit;font-size:14px;resize:none;box-sizing:border-box}
-    input[type="number"]{width:60px;padding:5px;border-radius:6px;border:1px solid #ccc;font-size:14px;text-align:center}
+    select{width:70px;padding:5px;border-radius:6px;border:1px solid #ccc;font-size:14px;text-align:center;cursor:pointer}
 
     @media (max-width:900px){
       .card{flex-direction:column-reverse}
@@ -61,34 +68,38 @@
       <div class="content">
         <h1>מחפש/ת מתנה שתרגש?</h1>
         <p class="lead">מחפשים מתנה שתדבר ללב, תצחיק את הנשמה – ותתאים מגיל 0 ועד 120?</p>
-
-        <p>
-          אם יש בחיים שלכם מישהו שתרצו להודות לו –
-          מחנכ/ת, גננ/ת, או כל דמות שהאמינה, חיזקה ועודדה –
-          הספר הזה הוא הדרך הכי מרגשת להגיד תודה.
-        </p>
-
-        <p>
-          "משושה לא מרוצה" הוא ספר ילדים ששם במרכזו את הקשר בין מבוגר משמעותי לדימוי העצמי של הילד,
-          ויוצר פתח לשיח רגשי. הוא גם כלי דידקטי ללימוד צורות –
-          ולהבנה שכל צורה בטבע יש לה מקום, תפקיד וחשיבות.
-        </p>
-
+        <p>אם יש בחיים שלכם מישהו שתרצו להודות לו – מחנכ/ת, גננ/ת, או כל דמות שהאמינה, חיזקה ועודדה – הספר הזה הוא הדרך הכי מרגשת להגיד תודה.</p>
+        <p>"משושה לא מרוצה" הוא ספר ילדים ששם במרכזו את הקשר בין מבוגר משמעותי לדימוי העצמי של הילד, ויוצר פתח לשיח רגשי. הוא גם כלי דידקטי ללימוד צורות – ולהבנה שכל צורה בטבע יש לה מקום, תפקיד וחשיבות.</p>
         <p>כי הטבע מלמד אותנו – הצורה שלך זה בול!</p>
-
         <p>מתאים כמתנה לילד, להורה, לצוות חינוכי, והכי חשוב לעצמך ❤️</p>
         <p>ספר שגם מצחיק, גם מרגש – וגם עושה סדר בגאומטריה של הלב.</p>
 
-        <!-- New Section for choosing copies and dedication -->
-        <p><strong>מה עכשיו?</strong><br>
-        בחרו את מספר העותקים, הוסיפו הקדשה (אם תרצו),<br>
-        ואנחנו נדאג שהוא יגיע ארוז באהבה – מוכן לרגש.</p>
-
+        <p><strong>מה עכשיו?</strong><br>בחרו את מספר העותקים, הוסיפו הקדשה (אם תרצו),<br>ואנחנו נדאג שהוא יגיע ארוז באהבה – מוכן לרגש.</p>
         <label for="copies">מספר עותקים:</label>
-        <input type="number" id="copies" min="1" max="20" value="1" step="1">
+        <select id="copies">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+          <option value="13">13</option>
+          <option value="14">14</option>
+          <option value="15">15</option>
+          <option value="16">16</option>
+          <option value="17">17</option>
+          <option value="18">18</option>
+          <option value="19">19</option>
+          <option value="20">20</option>
+        </select>
 
-        <p><strong>רוצים לצרף מילה אישית?</strong><br>
-        כתבו כאן הקדשה – ואנחנו נדפיס אותה ממש בתוך הספר 💌</p>
+        <p><strong>רוצים לצרף מילה אישית?</strong><br>כתבו כאן הקדשה – ואנחנו נדפיס אותה ממש בתוך הספר 💌</p>
         <textarea id="dedication" rows="3" placeholder="הקלידו כאן את ההקדשה שלכם..."></textarea>
 
         <div class="cta">
@@ -137,8 +148,6 @@
 
   <script>
     const PRICE_PER_BOOK = 64;
-    
-    // Update total price dynamically
     const copiesInput = document.getElementById('copies');
     const totalPriceEl = document.getElementById('totalPrice');
 
@@ -147,11 +156,10 @@
       totalPriceEl.textContent = `₪${PRICE_PER_BOOK * quantity}`;
     }
 
-    copiesInput.addEventListener('input', updateTotal);
-
+    copiesInput.addEventListener('change', updateTotal);
     updateTotal(); // initialize
 
-    // Carousel functionality
+    // Carousel
     (function(){
       const slidesEl = document.getElementById('slides');
       const slides = Array.from(slidesEl.children);
@@ -202,38 +210,22 @@
 
       document.addEventListener('keydown',(e)=>{ if(e.key==='ArrowLeft'){ nextSlide(); resetTimer(); } if(e.key==='ArrowRight'){ prevSlide(); resetTimer(); } });
 
-      // Payment functionality
-      payBtn.addEventListener('click', ()=>{
-        modal.classList.add('show');
-      });
-
-      closeModal.addEventListener('click', ()=>{
-        modal.classList.remove('show');
-      });
-
-      modal.addEventListener('click', (e)=>{
-        if(e.target === modal){
-          modal.classList.remove('show');
-        }
-      });
-
+      // Payment
+      payBtn.addEventListener('click', ()=>{ modal.classList.add('show'); });
+      closeModal.addEventListener('click', ()=>{ modal.classList.remove('show'); });
+      modal.addEventListener('click', (e)=>{ if(e.target === modal){ modal.classList.remove('show'); } });
       openBitApp.addEventListener('click', ()=>{
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
         if(isMobile){
           window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
-          setTimeout(()=>{
-            window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D';
-          }, 1500);
+          setTimeout(()=>{ window.location.href = 'https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D'; }, 1500);
         } else {
           window.open('https://www.bitpay.co.il/app/me/B33B6B29-A1D1-1BCE-C9EC-0AD3C01AF6C8856D', '_blank');
         }
         modal.classList.remove('show');
       });
 
-      moreBtn.addEventListener('click', ()=>{
-        alert('למידע נוסף ולפרטי יצירת קשר:\n\nניתן לשלוח מייל או להתקשר למספר טלפון שיופיע כאן.\n\nהספר "משושה לא מרוצה" זמין למשלוח לכל הארץ.');
-      });
+      moreBtn.addEventListener('click', ()=>{ alert('למידע נוסף ולפרטי יצירת קשר:\n\nניתן לשלוח מייל או להתקשר למספר טלפון שיופיע כאן.\n\nהספר "משושה לא מרוצה" זמין למשלוח לכל הארץ.'); });
 
       update();
     })();
