@@ -251,13 +251,7 @@
             dedication: currentOrderData.dedication,
             copies: currentOrderData.copies,
             total: currentOrderData.totalPrice 
-        }).then(() => {
-            console.log('SUCCESS! Email sent to ranktk@gmail.com');
-            alert('✅ פרטי ההזמנה נשלחו בהצלחה! כעת עוברים ל-Bit.');
-        }).catch(err => {
-            console.error('EmailJS Error - Could not send email:', err);
-            alert('❌ שגיאה בשליחת המייל עם פרטי ההזמנה. אנא שלח/י את הפרטים ידנית.');
-        });
+        })
     }
 
     // --- Event Listeners and Logic ---
@@ -377,3 +371,4 @@
   </script>
 </body>
 </html>
+
