@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ספר — מצגת תמונות + כפתור קנייה</title>
   <style>
-    :root{--gap:18px;--accent:#e94e77;--bg:#fff;--text:#222}
+    :root{--gap:18px;--accent:#e94e77;--bg:#e0f2f7; /* Changed to baby blue */ --text:#222}
     html,body{
       height:100%;
       margin:0;
@@ -14,7 +14,15 @@
       color:var(--text);
       overflow-x: hidden;
     }
-    .app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+    .app{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing:border-box; flex-direction: column;} /* Added flex-direction: column for logo placement */
+    .logo-container {
+      margin-bottom: 24px; /* Space between logo and card */
+      text-align: center;
+    }
+    .logo {
+      max-width: 200px; /* Adjust as needed */
+      height: auto;
+    }
     .card{width:100%;max-width:1100px;background:linear-gradient(180deg,#fff,#fbfbfb);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.08);overflow:hidden;display:flex;gap:var(--gap);flex-direction:row-reverse}
     .content{flex:1;min-width:260px;padding:28px;display:flex;flex-direction:column;gap:14px}
     h1{margin:0;font-size:20px}
@@ -82,6 +90,9 @@
 </head>
 <body>
   <div class="app">
+    <div class="logo-container">
+      <img src="https://i.imgur.com/sLoJrqk.png" alt="Logo" class="logo">
+    </div>
     <div class="card" role="application">
       <div class="content">
 
@@ -252,7 +263,7 @@
 
         // 🛑 STEP 2: Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your actual IDs
         emailjs.send('service_cprtcca', 'template_50ax085', {
-            to_email: 'ranktk@gmail.com',
+            to_email: 'ranktk@gmail.com', // This should be the recipient email for the order details
             name: currentOrderData.name,
             phone: currentOrderData.phone,
             email: currentOrderData.email,
@@ -262,6 +273,11 @@
             copies: currentOrderData.copies,
             total: currentOrderData.totalPrice 
         })
+        .then(function(response) {
+           console.log('SUCCESS!', response.status, response.text);
+        }, function(error) {
+           console.log('FAILED...', error);
+        });
     }
 
     // --- Event Listeners and Logic ---
@@ -355,7 +371,7 @@
                 window.open(bitUrl, '_blank');
             }
             closeModal(paymentModal);
-        }, 2200); // 1.2 second delay
+        }, 2200); // 2.2 second delay, increased slightly to ensure email is sent
     });
 
 
@@ -381,6 +397,3 @@
   </script>
 </body>
 </html>
-
-
-
